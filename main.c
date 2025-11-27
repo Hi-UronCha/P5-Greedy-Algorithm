@@ -13,7 +13,7 @@ int main(){
     for (int i = 0; i < N; i++) scanf("%d", &prices[i]);
     for (int i = 0; i < N; i++) scanf("%d", &coupons[i]);
 
-    Result res = solve_v1(N, D, prices, coupons);
+    Result res = solve_v2(N, D, prices, coupons);
 
     printf("%d %lld\n", res.count, res.left);
 
@@ -21,5 +21,5 @@ int main(){
     free(coupons);
 
     return 0;
-    
+
 }
