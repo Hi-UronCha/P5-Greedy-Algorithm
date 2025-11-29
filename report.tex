@@ -1,0 +1,164 @@
+\documentclass{article}
+
+%=========== Essential Packages ===========%
+\usepackage[a4paper, margin=1in]{geometry} % Page layout
+\usepackage{amsmath}                       % For math equations
+\usepackage{graphicx}                      % To include images
+\usepackage{booktabs}                      % For professional-looking tables
+\usepackage{hyperref}                      % For hyperlinks
+\usepackage{listings}                      % To display code snippets
+\usepackage{xcolor}                        % To define colors
+\usepackage{fancyhdr}                      % For headers and footers
+\usepackage{makecell}
+\usepackage{csquotes}
+\usepackage{titlesec}                      % To customize section titles if needed
+
+%=========== Listings (Code) Style Configuration ===========%
+% (Exactly matching your provided template)
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle}
+
+%=========== Header and Footer Config ===========%
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Shopping With Coupons}  % Changed project name
+\lhead{\leftmark}
+\cfoot{\thepage}
+
+%=========== Begin Document ===========%
+\begin{document}
+
+%===========================================================
+%  CUSTOM TITLE PAGE (封面页)
+%===========================================================
+\begin{titlepage}
+    \centering
+    \vspace*{1cm}
+    
+    
+ 
+    {\scshape\Large Project Report \par}
+    
+    \vspace{1.5cm}
+    
+    {\huge\bfseries Shopping With Coupons \par} % Project Title
+    
+    \vspace{2cm}
+
+     {\scshape\Large Zhao Menglei\\Zhou Haowen\\Pu Yuancan \par}
+    \vspace{1.5cm}
+    {\scshape\Large December 1, 2025 \par}
+%=========== Document Information ===========%
+\title{Project Report: A Mini Search Engine for Shakespeare's Works}
+\author{Zhao Menglei\\Zhou Haowen\\Pu Yuancan}
+\date{\today} % Or specify a date, e.g., \date{October 26, 2025}
+    
+\end{titlepage}
+
+%---------- Table of Contents ----------%
+\newpage
+\tableofcontents
+\thispagestyle{empty}
+\newpage
+
+% Reset page numbering to start from 1 after TOC
+\setcounter{page}{1}
+
+%===========================================================
+%  SECTION 1: INTRODUCTION
+%===========================================================
+\section{Introduction}
+
+\textit{Guideline: This section should provide an overview of the problem.}
+
+
+
+%===========================================================
+%  SECTION 2: SYSTEM DESIGN AND ALGORITHMS
+%===========================================================
+\section{System Design and Algorithms}
+
+\subsection{Data Structure Selection}
+\textit{Guideline: Discuss how data is stored.}
+
+
+\subsection{Algorithm Design (Greedy Strategy)}
+\textit{Guideline: Explain the logic.}
+
+\subsection{Pseudocode}
+\begin{algorithm} % Note: You might need \usepackage{algorithm} and \usepackage{algorithmic} if you want strict formatting, otherwise just use itemize or text.
+\textit{Guideline: Provide high-level pseudocode.}
+
+\end{algorithm}
+
+%===========================================================
+%  SECTION 3: TESTING AND EVALUATION
+%===========================================================
+\section{Testing and Evaluation}
+
+\subsection{Test Sample}
+\textit{Guideline: List your OS and Compiler version.}
+
+\subsection{Test Results}
+\textit{Guideline: Present a table of test cases.}
+
+
+
+\subsection{Analysis}
+\textit{Guideline: Briefly analyze the results. Mention that the program passed the sample and handled large inputs within the time limit.}
+
+%===========================================================
+%  SECTION 4: COMPLEXITY ANALYSIS AND DISCUSSION
+%===========================================================
+\section{Complexity Analysis and Discussion}
+
+\subsection{Time Complexity}
+\textit{Guideline: Analyze the mathematical complexity.}
+
+
+\subsection{Space Complexity}
+\textit{Guideline: Analyze memory usage.}
+
+
+\subsection{Discussion}
+\textit{Guideline: Discuss any trade-offs or why a simple $O(N^2)$ loop would fail.}
+
+%===========================================================
+%  SECTION 5: DECLARATION
+%===========================================================
+\section{Declaration}
+
+
+
+%===========================================================
+%  APPENDIX: CODE
+%===========================================================
+\newpage
+\appendix
+\section{Source Code}
+
+
+
+\end{document}
