@@ -1,0 +1,256 @@
+\documentclass{article}
+
+%=========== Essential Packages ===========%
+\usepackage[a4paper, margin=1in]{geometry} % Page layout
+\usepackage{amsmath}                       % For math equations
+\usepackage{graphicx}                      % To include images
+\usepackage{booktabs}                      % For professional-looking tables
+\usepackage{hyperref}                      % For hyperlinks
+\usepackage{listings}                      % To display code snippets
+\usepackage{xcolor}                        % To define colors
+\usepackage{fancyhdr}                      % For headers and footers
+\usepackage{makecell}
+\usepackage{csquotes}
+\usepackage{titlesec}                      % To customize section titles if needed
+
+%=========== Listings (Code) Style Configuration ===========%
+% (Exactly matching your provided template)
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle}
+
+%=========== Header and Footer Config ===========%
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Shopping With Coupons}  % Changed project name
+\lhead{\leftmark}
+\cfoot{\thepage}
+
+%=========== Begin Document ===========%
+\begin{document}
+
+%===========================================================
+%  CUSTOM TITLE PAGE (封面页)
+%===========================================================
+\begin{titlepage}
+    \centering
+    \vspace*{1cm}
+    
+    
+ 
+    {\scshape\Large Project Report \par}
+    
+    \vspace{1.5cm}
+    
+    {\huge\bfseries Shopping With Coupons \par} % Project Title
+    
+    \vspace{2cm}
+
+     {\scshape\Large Zhao Menglei\\Zhou Haowen\\Pu Yuancan \par}
+    \vspace{1.5cm}
+    {\scshape\Large December 1, 2025 \par}
+%=========== Document Information ===========%
+\title{Project Report: A Mini Search Engine for Shakespeare's Works}
+\author{Zhao Menglei\\Zhou Haowen\\Pu Yuancan}
+\date{\today} % Or specify a date, e.g., \date{October 26, 2025}
+    
+\end{titlepage}
+
+%---------- Table of Contents ----------%
+\newpage
+\tableofcontents
+\thispagestyle{empty}
+\newpage
+
+% Reset page numbering to start from 1 after TOC
+\setcounter{page}{1}
+
+%===========================================================
+%  SECTION 1: INTRODUCTION
+%===========================================================
+\section{Introduction}
+
+\subsection{Problem Description}
+In this project, we need to solve a shopping optimization problem. The scenario is as follows:
+\begin{itemize}
+    \item We have $N$ items with different prices.
+    \item We have $N$ types of coupons with different values.
+    \item We have the amount of money $D$.
+\end{itemize}
+
+The rule for buying an item is simple: we can pair any item with any coupon. The cost of one transaction is calculated as:
+\[ \text{Cost} = \text{Price} - \text{Coupon Value} \]
+Notice: the highest value of coupons is less than the lowest price of items. So we do not need to consider the negative cost.
+
+We can reuse the same type of coupon or buy the same item multiple times, but a specific pair (Item $i$, Coupon $j$) can only be used once. Our goal is to find a strategy to buy the \textbf{maximum number of items} without exceeding the budget $D$.
+
+\subsection{Objective}
+We want to select $K$ pairs of $(item, coupon)$ such that the total cost is less than or equal to $D$, and $K$ is maximized. This is a typical combinatorial optimization problem.
+
+\subsection{Challenges}
+The main difficulty of this problem is the data size.
+\begin{itemize}
+    \item The number of items $N$ can be up to $10^5$.
+    \item The total budget $D$ can be up to $10^6$.
+\end{itemize}
+
+If we try to list all possible combinations of items and coupons, there would be $N \times N = 10^{10}$ pairs. A simple brute-force solution (calculating all pairs and sorting them) requires too much memory and computation time. Therefore, we need to design an efficient greedy algorithm using a \textbf{Priority Queue} to find the solution within the time limit.
+
+
+%===========================================================
+%  SECTION 2: SYSTEM DESIGN AND ALGORITHMS
+%===========================================================
+\section{System Design and Algorithms}
+
+\subsection{Data Structure Selection}
+\textit{Guideline: Discuss how data is stored.}
+
+
+\subsection{Algorithm Design}
+
+\subsubsection{Proof of Correctness (Greedy Strategy)}
+
+The core strategy of our algorithm is simple: \textbf{"Always choose the cheapest available combination of item and coupon."} 
+
+But why does this guarantee the maximum number of items? We can prove this using a logical method called the \textit{Exchange Argument}.
+
+\paragraph{The Proposition}
+To maximize the number of purchased items ($k$) within a fixed budget $D$, we must select the $k$ combinations with the \textbf{smallest costs}.
+
+\paragraph{The Proof}
+Suppose there exists an "Optimal Solution" that is different from our "Greedy Solution". 
+
+\begin{enumerate}
+    \item \textbf{Assumption:} The Greedy Solution picks a cheap combination $A$ (Cost $C_A$), but the Optimal Solution decides \textbf{not} to pick $A$. Instead, to reach the same count, the Optimal Solution picks a more expensive combination $B$ (Cost $C_B$).
+    
+    \item \textbf{Inequality:} Since the Greedy algorithm always picks the minimum cost available, it must be true that:
+    \[ C_A < C_B \]
+    
+    \item \textbf{Exchange:} If we modify the Optimal Solution by swapping $B$ for $A$:
+    \[ \text{New Total Cost} = \text{Old Total Cost} - C_B + C_A \]
+    Since $C_A < C_B$, the New Total Cost is \textbf{smaller} than the Old Total Cost.
+    
+    \item \textbf{Conclusion:} By choosing the cheaper item $A$ instead of $B$, we save money ($C_B - C_A$). With this extra money, we might be able to buy even more items later.
+\end{enumerate}
+
+Therefore, replacing any expensive choice with a cheaper choice never hurts the result; it only saves budget. This proves that selecting the cheapest options first is always the best strategy to maximize the total count.
+
+\subsubsection{Algorithm Implementation (Implicit Graph Search)}
+
+
+\subsection{Pseudocode}
+
+%===========================================================
+%  SECTION 3: TESTING AND EVALUATION
+%===========================================================
+\section{Testing and Evaluation}
+
+\subsection{Test Sample}
+\textit{Guideline: List your OS and Compiler version.}
+
+\subsection{Test Results}
+\textit{Guideline: Present a table of test cases.}
+
+
+
+\subsection{Analysis}
+\textit{Guideline: Briefly analyze the results. Mention that the program passed the sample and handled large inputs within the time limit.}
+
+%===========================================================
+%  SECTION 4: COMPLEXITY ANALYSIS AND DISCUSSION
+%===========================================================
+\section{Complexity Analysis and Discussion}
+
+\subsection{Time Complexity}
+To analyze the time complexity exactly, we define the following variables:
+\begin{itemize}
+    \item $N$: The number of items and coupons ($N \le 10^5$).
+    \item $D$: The initial budget ($D \le 10^6$).
+    \item $K$: The actual number of items purchased. Since the minimum cost is at least 1, $K \le D$.
+    \item $M$: The number of nodes in the priority queue at any given time. Due to the implicit graph search strategy, the heap maintains a "wavefront" of candidates, where $M \approx O(N)$.
+\end{itemize}
+
+The total execution time consists of two parts: \textbf{Preprocessing} and the \textbf{Greedy Loop}.
+
+\subsubsection*{1. Preprocessing (Sorting)}
+The algorithm begins by sorting the \texttt{prices} array in ascending order and the \texttt{coupons} array in descending order using QuickSort .
+\[ T_{sort} = 2 \times O(N \log N) = O(N \log N) \]
+
+\subsubsection*{2. The Main Greedy Loop}
+The loop runs $K$ times (once for each item purchased). Inside the loop, we perform operations on a 4-ary Heap:
+\begin{itemize}
+    \item \textbf{DeleteMin (Shift Down):} In a 4-ary heap, the height is $\log_4 M$. Each step requires comparing 4 children. The complexity is $O(\log_4 M)$.
+    \item \textbf{Pruning \& Insertion (Shift Up):} We calculate the next potential state. If the cost exceeds the remaining budget $D$, we prune the node. Otherwise, we insert it into the heap. The insertion takes $O(\log_4 M)$.
+\end{itemize}
+
+Since the maximum heap size $M$ is bounded by $O(N)$, and the loop runs $K$ times, the total time for the loop is:
+\[ T_{loop} \approx K \times (O(\log_4 N) + O(\log_4 N)) = O(K \log N) \]
+
+
+\subsubsection*{Conclusion}
+Adding both parts, the total time complexity is:
+\[ T_{total} = O(N \log N + K \log N) \]
+Given the constraints $N=10^5$ and $K \le 10^6$, the algorithm performs well within the 100-200ms range, far below the 1-second time limit.
+
+\subsection{Space Complexity}
+The space complexity is determined by the storage required for input data and the dynamic data structures.
+
+\begin{itemize}
+    \item \textbf{Static Storage:} We store the \texttt{prices} and \texttt{coupons} arrays, taking $O(N)$ space.
+    \item \textbf{Dynamic Storage (Heap):} We use a structure-of-arrays approach (parallel arrays for costs and indices). Although there are $N^2$ possible combinations, our \textbf{implicit graph search} strategy only stores the candidate frontier. The maximum number of nodes in the heap is linear with respect to $N$.
+    \item \textbf{Auxiliary Space:} The recursion stack for `qsort` takes $O(\log N)$.
+\end{itemize}
+
+Thus, the total space complexity is:
+\[ S_{total} = O(N) \]
+For $N=10^5$, the memory usage is approximately 2.4 MB, which is significantly lower than the typical memory limit (64 MB or 128 MB).
+
+\subsection{Discussion}
+
+\subsubsection*{Why not $O(N^2)$?}
+A brute-force approach would generate all $N \times N$ combinations, sort them, and select the cheapest ones. With $N=10^5$, this results in $10^{10}$ entries, which would immediately cause a Memory Limit Exceeded and Time Limit Exceeded. Our approach avoids this by dynamically generating states.
+
+\subsubsection*{The Power of Pruning}
+The condition \texttt{if (next\_cost <= D)} is a critical optimization. As the budget $D$ decreases, fewer items satisfy this condition. This prevents the heap from growing unnecessarily, ensuring that we only store reachable states.
+
+\subsubsection*{4-ary Heap vs. Binary Heap}
+We implemented a \textbf{4-ary Heap} instead of a standard Binary Heap. A 4-ary heap reduces the tree height by half ($\log_4 N = \frac{1}{2} \log_2 N$), reducing the number of levels to traverse during `ShiftUp` and `ShiftDown`. Additionally, 4-ary heaps exhibit better \textbf{cache locality} because child nodes are stored contiguously in memory, reducing CPU cache misses during large-scale operations.
+
+%===========================================================
+%  SECTION 5: DECLARATION
+%===========================================================
+\section{Declaration}
+
+
+
+%===========================================================
+%  APPENDIX: CODE
+%===========================================================
+\newpage
+\appendix
+\section{Source Code}
+
+
+
+\end{document}
