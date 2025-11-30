@@ -27,7 +27,7 @@ static void run_test(Testcase* tc) {
 
     // 执行测试
     clock_t start = clock();
-    Result res = solve_v2(tc->N, tc->D, p, c);
+    Result res = solve_v1(tc->N, tc->D, p, c);
     double time_ms = (double)(clock() - start) / CLOCKS_PER_SEC * 1000;
 
     // 输出结果
@@ -78,7 +78,7 @@ static int single_large_test(int N, long long D, int test_idx) {
 
     // 执行测试（仅计时，不输出详细结果）
     clock_t start = clock();
-    Result res = solve_v2(N, D, prices, coupons);
+    Result res = solve_v1(N, D, prices, coupons);
     (void)res;  // 忽略结果（重点统计时间，符合题目要求）
 
     // 释放内存
