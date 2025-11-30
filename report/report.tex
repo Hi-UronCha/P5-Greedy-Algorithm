@@ -128,10 +128,31 @@
 %===========================================================
 \section{Introduction}
 
-\textit{Guideline: This section should provide an overview of the problem.}
+\subsection{Problem Description}
+In this project, we need to solve a shopping optimization problem. The scenario is as follows:
+\begin{itemize}
+    \item We have $N$ items with different prices.
+    \item We have $N$ types of coupons with different values.
+    \item We have the amount of money $D$.
+\end{itemize}
 
+The rule for buying an item is simple: we can pair any item with any coupon. The cost of one transaction is calculated as:
+\[ \text{Cost} = \text{Price} - \text{Coupon Value} \]
+Notice: the highest value of coupons is less than the lowest price of items. So we do not need to consider the negative cost.
 
+We can reuse the same type of coupon or buy the same item multiple times, but a specific pair (Item $i$, Coupon $j$) can only be used once. Our goal is to find a strategy to buy the \textbf{maximum number of items} without exceeding the budget $D$.
 
+\subsection{Objective}
+We want to select $K$ pairs of $(item, coupon)$ such that the total cost is less than or equal to $D$, and $K$ is maximized. This is a typical combinatorial optimization problem.
+
+\subsection{Challenges}
+The main difficulty of this problem is the data size.
+\begin{itemize}
+    \item The number of items $N$ can be up to $10^5$.
+    \item The total budget $D$ can be up to $10^6$.
+\end{itemize}
+
+If we try to list all possible combinations of items and coupons, there would be $N \times N = 10^{10}$ pairs. A simple brute-force solution (calculating all pairs and sorting them) requires too much memory and computation time. Therefore, we need to design an efficient greedy algorithm using a \textbf{Priority Queue} to find the solution within the time limit.
 %===========================================================
 %  SECTION 2: SYSTEM DESIGN AND ALGORITHMS
 %===========================================================
@@ -200,9 +221,39 @@ While the standard Binary Heap is efficient, we optimized it to a \textbf{4-ary 
 
 \subsection{Algorithm Design (Greedy Strategy)}
 
-The core problem is to maximize purchases with a limited budget. We employ a greedy strategy with specific optimizations for efficiency.
+\subsubsection{Proof of Correctness (Greedy Strategy)}
 
-\subsubsection{Core Logic}
+The core strategy of our algorithm is simple: \textbf{"Always choose the cheapest available combination of item and coupon."} 
+
+But why does this guarantee the maximum number of items? We can prove this using a logical method called the \textit{Exchange Argument}.
+
+\paragraph{The Proposition}
+To maximize the number of purchased items ($k$) within a fixed budget $D$, we must select the $k$ combinations with the \textbf{smallest costs}.
+
+\paragraph{The Proof}
+Suppose there exists an "Optimal Solution" that is different from our "Greedy Solution". 
+
+\begin{enumerate}
+    \item \textbf{Assumption:} The Greedy Solution picks a cheap combination $A$ (Cost $C_A$), but the Optimal Solution decides \textbf{not} to pick $A$. Instead, to reach the same count, the Optimal Solution picks a more expensive combination $B$ (Cost $C_B$).
+
+    \item \textbf{Inequality:} Since the Greedy algorithm always picks the minimum cost available, it must be true that:
+    \[ C_A < C_B \]
+
+    \item \textbf{Exchange:} If we modify the Optimal Solution by swapping $B$ for $A$:
+    \[ \text{New Total Cost} = \text{Old Total Cost} - C_B + C_A \]
+    Since $C_A < C_B$, the New Total Cost is \textbf{smaller} than the Old Total Cost.
+
+    \item \textbf{Conclusion:} By choosing the cheaper item $A$ instead of $B$, we save money ($C_B - C_A$). With this extra money, we might be able to buy even more items later.
+\end{enumerate}
+
+Therefore, replacing any expensive choice with a cheaper choice never hurts the result; it only saves budget. This proves that selecting the cheapest options first is always the best strategy to maximize the total count.
+
+\subsubsection{Algorithm Implementation}
+
+\begin{enumerate}
+
+\item \textbf{Core Logic}
+
 The fundamental approach relies on sorting and a priority queue:
 \begin{enumerate}
     \item \textbf{Sorting:} Sort \texttt{Prices} in ascending order and \texttt{Coupons} in descending order. This ensures optimal pairings are easily discoverable.
@@ -210,7 +261,9 @@ The fundamental approach relies on sorting and a priority queue:
     \item \textbf{Consumption:} If the budget allows, we buy the item and decrement the budget. The loop terminates when the heap is empty or the cheapest item is unaffordable.
 \end{enumerate}
 
-\subsubsection{Optimizations}
+
+\item \textbf{Optimizations}
+
 To handle large datasets ($N=10^5$) efficiently, we introduce two key improvements in the second version:
 \begin{enumerate}
     \item \textbf{Frontier Expansion:} 
@@ -224,6 +277,8 @@ To handle large datasets ($N=10^5$) efficiently, we introduce two key improvemen
 
     \item \textbf{Cost Pruning:} 
     Before pushing any new candidate into the heap, we verify if \texttt{candidate.cost $\le$ current\_budget}. Impossible candidates are discarded immediately, saving memory and heap operations.
+\end{enumerate}
+
 \end{enumerate}
 
 \subsection{Pseudocode}
@@ -335,7 +390,6 @@ Read integers $N$ and $D$\;
 
 
 \subsection{Analysis}
-\textit{Guideline: Briefly analyze the results. Mention that the program passed the sample and handled large inputs within the time limit.}
 
 %===========================================================
 %  SECTION 4: COMPLEXITY ANALYSIS AND DISCUSSION
@@ -343,15 +397,56 @@ Read integers $N$ and $D$\;
 \section{Complexity Analysis and Discussion}
 
 \subsection{Time Complexity}
-\textit{Guideline: Analyze the mathematical complexity.}
+To analyze the time complexity exactly, we define the following variables:
+\begin{itemize}
+    \item $N$: The number of items and coupons ($N \le 10^5$).
+    \item $D$: The initial budget ($D \le 10^6$).
+    \item $K$: The actual number of items purchased. Since the minimum cost is at least 1, $K \le D$.
+    \item $M$: The number of nodes in the priority queue at any given time. Due to the implicit graph search strategy, the heap maintains a "wavefront" of candidates, where $M \approx O(N)$.
+\end{itemize}
 
+The total execution time consists of two parts: \textbf{Preprocessing} and the \textbf{Greedy Loop}.
+
+\subsubsection*{1. Preprocessing (Sorting)}
+The algorithm begins by sorting the \texttt{prices} array in ascending order and the \texttt{coupons} array in descending order using QuickSort .
+\[ T_{sort} = 2 \times O(N \log N) = O(N \log N) \]
+
+\subsubsection*{2. The Main Greedy Loop}
+The loop runs $K$ times (once for each item purchased). Inside the loop, we perform operations on a 4-ary Heap:
+\begin{itemize}
+    \item \textbf{DeleteMin (Shift Down):} In a 4-ary heap, the height is $\log_4 M$. Each step requires comparing 4 children. The complexity is $O(\log_4 M)$.
+    \item \textbf{Pruning \& Insertion (Shift Up):} We calculate the next potential state. If the cost exceeds the remaining budget $D$, we prune the node. Otherwise, we insert it into the heap. The insertion takes $O(\log_4 M)$.
+\end{itemize}
+
+Since the maximum heap size $M$ is bounded by $O(N)$, and the loop runs $K$ times, the total time for the loop is:
+\[ T_{loop} \approx K \times (O(\log_4 N) + O(\log_4 N)) = O(K \log N) \]
+
+
+\subsubsection*{Conclusion}
+Adding both parts, the total time complexity is:
+\[ T_{total} = O(N \log N + K \log N) \]
+Given the constraints $N=10^5$ and $K \le 10^6$, the algorithm performs well within the 100-200ms range, far below the 1-second time limit.
 
 \subsection{Space Complexity}
-\textit{Guideline: Analyze memory usage.}
+The space complexity is determined by the storage required for input data and the dynamic data structures.
 
+\begin{itemize}
+    \item \textbf{Static Storage:} We store the \texttt{prices} and \texttt{coupons} arrays, taking $O(N)$ space.
+    \item \textbf{Dynamic Storage (Heap):} We use a structure-of-arrays approach (parallel arrays for costs and indices). Although there are $N^2$ possible combinations, our \textbf{implicit graph search} strategy only stores the candidate frontier. The maximum number of nodes in the heap is linear with respect to $N$.
+    \item \textbf{Auxiliary Space:} The recursion stack for `qsort` takes $O(\log N)$.
+\end{itemize}
+
+Thus, the total space complexity is:
+\[ S_{total} = O(N) \]
+For $N=10^5$, the memory usage is approximately 2.4 MB, which is significantly lower than the typical memory limit (64 MB or 128 MB).
 
 \subsection{Discussion}
-\textit{Guideline: Discuss any trade-offs or why a simple $O(N^2)$ loop would fail.}
+
+\subsubsection*{Why not $O(N^2)$?}
+A brute-force approach would generate all $N \times N$ combinations, sort them, and select the cheapest ones. With $N=10^5$, this results in $10^{10}$ entries, which would immediately cause a Memory Limit Exceeded and Time Limit Exceeded. Our approach avoids this by dynamically generating states.
+
+\subsubsection*{The Power of Pruning}
+The condition \texttt{if (next\_cost <= D)} is a critical optimization. As the budget $D$ decreases, fewer items satisfy this condition. This prevents the heap from growing unnecessarily, ensuring that we only store reachable states.
 
 %===========================================================
 %  SECTION 5: DECLARATION
